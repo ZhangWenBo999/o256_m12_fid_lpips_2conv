@@ -29,7 +29,7 @@ class MultiLevelSCSA(nn.Module):
         # 融合后的通道注意力
         self.q = nn.Conv2d(in_channels=dim, out_channels=dim, kernel_size=1, bias=qkv_bias)
         self.k = nn.Conv2d(in_channels=dim, out_channels=dim, kernel_size=1, bias=qkv_bias)
-        self.v = nn.Conv2d(in_channels=dim, out_channels=dim, kernel_size=1, bias=qkv_bias)
+        # self.v = nn.Conv2d(in_channels=dim, out_channels=dim, kernel_size=1, bias=qkv_bias)
         self.attn_drop = nn.Dropout(attn_drop_ratio)
 
     def forward(self, x):
@@ -45,8 +45,8 @@ class MultiLevelSCSA(nn.Module):
         # 通道注意力
         attn = self.q(fused_features) @ self.k(fused_features).transpose(-2, -1) * self.scaler
         attn = self.attn_drop(attn.softmax(dim=-1))
-        v = self.v(fused_features)
-        attn = attn @ v
+        # v = self.v(fused_features)
+        # attn = attn @ v
         return fused_features * attn
 
 if __name__ == '__main__':
