@@ -23,7 +23,7 @@ class MultiLevelSCSA(nn.Module):
         ])
 
         self.multi_layer_norms = nn.ModuleList([nn.GroupNorm(4, dim) for _ in range(len(group_kernel_sizes))])
-        # self.fuse_layer = nn.Conv2d(dim*4, dim, 1)
+        self.fuse_layer = nn.Conv2d(dim*4, dim, 1)
         self.sa_gate = nn.Sigmoid()
 
         # 融合后的通道注意力
@@ -39,8 +39,8 @@ class MultiLevelSCSA(nn.Module):
             layer_outputs.append(layer_out)
 
         # 多层级融合特征
-        fused_features = sum(layer_outputs) / self.levels
-        # fused_features = self.fuse_layer(torch.cat(layer_outputs, dim=1))
+        # fused_features = sum(layer_outputs) / self.levels
+        fused_features = self.fuse_layer(torch.cat(layer_outputs, dim=1))
 
         # 通道注意力
         attn = self.q(fused_features) @ self.k(fused_features).transpose(-2, -1) * self.scaler
